@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Junebug Poetry</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Header with Logo -->
+    <header>
+        <div class="logo-container">
+            <div class="logo-placeholder">
+                <img src="assets/junebug-logo.png" alt="Junebug logo" class="logo-img">
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <button class="nav-btn" onclick="showPage('home')">HOME</button>
+        <button class="nav-btn" onclick="showPage('poems')">POEMS</button>
+        <button class="nav-btn" onclick="showPage('about')">ABOUT</button>
+        <button class="nav-btn" onclick="window.open('https://junebugjournaling.carrd.co/', '_blank')">COMMISSION</button>
+        <button class="nav-btn" onclick="showPage('contact')">CONTACT</button>
+    </nav>
+
+    <!-- Loading Indicator -->
+    <div id="loading-indicator" class="loading-indicator">
+        <div class="spinner"></div>
+        <p>Loading poems...</p>
+    </div>
+
+    <!-- Home Page -->
+    <div id="home-page" class="page active">
+        <div class="home-container">
+            <div class="home-left">
+                <div class="illustration-box">
+                    <div class="illustration-placeholder">
+                        <img src="assets/junebug-portrait.png" alt="Junebug profile illustration" class="illustration-img">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="home-right">
+                <h1 class="home-title">Hi, I'm Junebug!</h1>
+                
+                <div class="divider-placeholder">
+                    <img src="assets/strawberry-divider.png" alt="Strawberry divider" class="divider-img">
+                </div>
+                
+                <p class="home-description">
+                    With avidity and passion soaring through the soul, and genuineness and softness flowing through the heart - I present my best works. My name is June Calliope Parker, and I'm honored to present my poetry.
+                </p>
+                
+                <div class="home-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-poems">0</div>
+                        <div class="stat-label">Poems</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="latest-date">—</div>
+                        <div class="stat-label">Latest</div>
+                    </div>
+                </div>
+                
+                <button class="start-btn" onclick="showPage('poems')">Start reading!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Poems Page -->
+    <div id="poems-page" class="page">
+        <div class="poems-container">
+            <div class="poems-header">
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Search for poems..." oninput="filterPoems()">
+                </div>
+                
+                <div class="poems-title-section">
+                    <h1 class="poems-title">Poems</h1>
+                    <p class="poems-subtitle">by Junebug</p>
+                </div>
+                
+                <button class="submit-btn" onclick="showPasswordModal()">Submit a Poem</button>
+            </div>
+
+            <!-- Tag Filter -->
+            <div class="tag-filter">
+                <span class="filter-label">Sort by tag:</span>
+                <button class="tag-btn" data-tag="free-verse" onclick="toggleTagFilter(this)">free-verse</button>
+                <button class="tag-btn" data-tag="structured" onclick="toggleTagFilter(this)">structured</button>
+                <button class="tag-btn" data-tag="long-form" onclick="toggleTagFilter(this)">long-form</button>
+                <button class="tag-btn" data-tag="short-form" onclick="toggleTagFilter(this)">short-form</button>
+                <button class="clear-filter-btn" onclick="clearFilters()">Clear Filters</button>
+            </div>
+
+            <!-- Sort Options -->
+            <div class="sort-options">
+                <span class="sort-label">Sort by:</span>
+                <button class="sort-btn active" data-sort="newest" onclick="changeSortOrder(this)">Newest First</button>
+                <button class="sort-btn" data-sort="oldest" onclick="changeSortOrder(this)">Oldest First</button>
+                <button class="sort-btn" data-sort="title" onclick="changeSortOrder(this)">Title (A-Z)</button>
+            </div>
+
+            <!-- Results Count -->
+            <div class="results-info">
+                <span id="results-count">0 poems found</span>
+            </div>
+
+            <!-- Poems Grid -->
+            <div id="poems-grid" class="poems-grid"></div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="empty-state" style="display: none;">
+                <div class="empty-icon">📝</div>
+                <h3>No poems found</h3>
+                <p>Try adjusting your filters or search terms</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Poem Detail Page -->
+    <div id="poem-detail-page" class="page">
+        <div class="poem-detail-container">
+            <button class="back-btn" onclick="showPage('poems')">
+                ← Back to Poems
+            </button>
+            <div id="poem-detail-content"></div>
+        </div>
+    </div>
+
+    <!-- About Page -->
+    <div id="about-page" class="page">
+        <div class="about-container">
+            <h1 class="section-title">About Junebug</h1>
+            <div class="about-content">
+                <div class="about-image-placeholder">
+                    <img src="assets/junebug-portrait.png" alt="Junebug portrait" class="about-image-img">
+                </div>
+                <div class="about-text">
+                    <p>♡ June Calliope Parker ♡<br>➜  Junebug / Junie / JB</p>
+                    <p>♡ twenty - three yrs. old ♡</p>
+                    <p>♡ he/him | she/her ♡</p>
+
+                    <p>♡ Chronic Illness ♡<br>➜ Postural Orthostatic Tachycardia Syndrome (POTS)</p>
+
+                    <p>♡ Mental Illness ♡<br>➜ Autism<br>➜ Attention Deficit Hyperactivity Disorder (ADHD)<br>➜ Borderline Personality Disorder (BPD)<br>➜ Schizoaffective Bipolar Disorder<br>➜ Post-Traumatic Stress Disorder (PTSD)</p>
+
+                    <p>♡ Published Author ♡<br>➜  The Lover's Guide To The Color Red</p>
+
+                    <p>♡ Education ♡<br>➜ English Literature (Associates)<br>➜ Arts, Humanities, Social Sciences (Associates)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Page -->
+    <div id="contact-page" class="page">
+        <div class="contact-container">
+            <h1 class="section-title">Get in Touch</h1>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-card">
+                        <h3>📧 Email</h3>
+                        <p>junebug@poetry.com</p>
+                    </div>
+                    <div class="contact-card">
+                        <h3>🐦 Social Media</h3>
+                        <p>@junebugpoetry</p>
+                    </div>
+                    <div class="contact-card">
+                        <h3>💌 Discord</h3>
+                        <p>@redsolarmoon</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Modal -->
+    <div id="password-modal" class="modal">
+        <div class="modal-content">
+            <h2>Admin Access Required</h2>
+            <p>Please enter the password to submit a poem:</p>
+            <input type="password" id="password-input" placeholder="Enter password">
+            <div id="password-error" class="error-message"></div>
+            <div class="modal-buttons">
+                <button class="modal-btn submit-modal-btn" onclick="checkPassword()">Submit</button>
+                <button class="modal-btn cancel-modal-btn" onclick="closePasswordModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit Poem Modal -->
+    <div id="submit-modal" class="modal">
+        <div class="modal-content submit-poem-modal">
+            <h2>Submit a Poem</h2>
+            <label>Title of written work</label>
+            <input type="text" id="poem-title" class="poem-input">
+            
+            <label>Content of written work</label>
+            <textarea id="poem-content" class="poem-textarea" rows="10"></textarea>
+            
+            <label>Choose tags (select all that apply)</label>
+            <div class="tag-selection">
+                <button class="tag-select-btn" data-tag="free-verse" onclick="togglePoemTag(this)">free-verse</button>
+                <button class="tag-select-btn" data-tag="structured" onclick="togglePoemTag(this)">structured</button>
+                <button class="tag-select-btn" data-tag="long-form" onclick="togglePoemTag(this)">long-form</button>
+                <button class="tag-select-btn" data-tag="short-form" onclick="togglePoemTag(this)">short-form</button>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="modal-btn submit-modal-btn" onclick="submitPoem()">SUBMIT</button>
+                <button class="modal-btn cancel-modal-btn" onclick="closeSubmitModal()">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Toast -->
+    <div id="success-toast" class="toast">
+        <span id="toast-message"></span>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
